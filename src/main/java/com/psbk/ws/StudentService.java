@@ -3,10 +3,13 @@ package com.psbk.ws;
 import com.psbk.ws.Student;
 import com.psbk.ws.common.MasterConnection;
 import com.psbk.ws.common.MyMap;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -17,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.codehaus.jettison.json.JSONObject;
 
 @Path("/student")
@@ -25,14 +29,19 @@ public class StudentService extends MasterConnection{
 	@GET
 	@Path("/get")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Student getStudent(){
-		Student s = new Student();
-		
-		s.setId("143040001");
-		s.setName("John Doe");
-		s.setAddress("Gotham City");
-		
-		return s;
+	public Map getStudent(){
+		Map<String, Object> rs = new HashMap<String, Object>();
+        try {
+            createConnection();
+            List mhsList = (List) jt.queryList("select * from mahasiswa", new MyMap());
+            closeConnection();
+            if (mhsList != null) {
+                rs.put("result :", mhsList);
+            }
+        } catch (Exception e) {
+            rs.put("Pesan", "Gagal karena : " + e.getMessage());
+        }
+        return rs;
 	}
 	
 	@POST
